@@ -1,0 +1,15 @@
+:root {
+  --aza-red: #de1920;
+  --aza-red-dark: #9f1117;
+  --aza-red-soft: #fde6e7;
+  --aza-blue: #4f6f92;
+  --aza-blue-dark: #234b70;
+  --aza-graphite: #2f3437;
+  --aza-concrete: #e6e6e6;
+  --aza-paper: #ffffff;
+  --aza-off-white: #f7f8f8;
+  --aza-display: Georgia, "Times New Roman", serif;
+  --aza-body: Inter, Montserrat, "Segoe UI", Arial, sans-serif;
+  --aza-radius-sm: 6px;
+  --aza-radius-md: 8px;
+}
