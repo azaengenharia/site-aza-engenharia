@@ -7,11 +7,9 @@ window.addEventListener("beforeunload", () => {
 });
 
 window.addEventListener("load", () => {
-  if (window.location.hash) {
-    history.replaceState(null, "", window.location.pathname + window.location.search);
+  if (!window.location.hash) {
+    window.scrollTo(0, 0);
   }
-
-  window.scrollTo(0, 0);
 });
 
 const revealItems = document.querySelectorAll(".reveal");
@@ -46,72 +44,77 @@ revealItems.forEach((item) => revealObserver.observe(item));
 
 const galleries = {
   residencial: {
-    title: "Obra residencial",
+    title: "Obras residenciais",
     images: [
       {
-        src: "assets/images/obra-residencial-placa.png",
-        alt: "Obra residencial com placa da AZA Engenharia",
-        caption: "Registro da obra residencial com placa de acompanhamento.",
+        src: "assets/images/pexels-alef-morais-336305364-34277690.jpg",
+        alt: "Residencia contemporanea com fachada em madeira, vidro e pedra",
+        caption: "Residencia contemporanea com materiais naturais e fachada marcante.",
       },
       {
-        src: "https://images.pexels.com/photos/28885519/pexels-photo-28885519.jpeg?auto=compress&cs=tinysrgb&w=1200&h=820&fit=crop",
-        alt: "Casa residencial em reforma com andaimes",
-        caption: "Casa em etapa de obra e reforma.",
+        src: "assets/images/pexels-alaritammsalu-27390096.jpg",
+        alt: "Detalhe de casa residencial com acabamento externo",
+        caption: "Leitura de fachada, implantação e acabamento externo.",
       },
       {
-        src: "https://images.pexels.com/photos/13366868/pexels-photo-13366868.jpeg?auto=compress&cs=tinysrgb&w=1200&h=820&fit=crop",
-        alt: "Casa em construção em área residencial",
-        caption: "Estrutura residencial em andamento.",
+        src: "assets/images/pexels-amar-35120035.jpg",
+        alt: "Detalhe arquitetonico residencial",
+        caption: "Composição arquitetônica e cuidado com volumetria.",
       },
       {
-        src: "https://images.pexels.com/photos/5317154/pexels-photo-5317154.jpeg?auto=compress&cs=tinysrgb&w=1200&h=820&fit=crop",
-        alt: "Ambiente residencial em reforma",
-        caption: "Preparação interna para reforma.",
-      },
-      {
-        src: "https://images.pexels.com/photos/6474477/pexels-photo-6474477.jpeg?auto=compress&cs=tinysrgb&w=1200&h=820&fit=crop",
-        alt: "Pintura de ambiente residencial",
-        caption: "Acabamento e pintura de ambiente.",
-      },
-      {
-        src: "https://images.pexels.com/photos/3616757/pexels-photo-3616757.jpeg?auto=compress&cs=tinysrgb&w=1200&h=820&fit=crop",
-        alt: "Materiais de reforma em um cômodo",
-        caption: "Materiais organizados para etapa de acabamento.",
+        src: "assets/images/pexels-artbovich-7598378.jpg",
+        alt: "Ambiente residencial com acabamento contemporaneo",
+        caption: "Ambientes finalizados com atenção à experiência de uso.",
       },
     ],
   },
-  terreno: {
-    title: "Terreno e início de obra",
+  execucao: {
+    title: "Execução em campo",
     images: [
       {
-        src: "assets/images/terreno-obra-aza.png",
-        alt: "Terreno com placa da AZA Engenharia",
-        caption: "Terreno com identificação da obra.",
+        src: "assets/images/pexels-construccion-total-2464540-12222682.jpg",
+        alt: "Obra em alvenaria com equipe em execução",
+        caption: "Alvenaria, estrutura e organização de materiais no canteiro.",
       },
       {
-        src: "https://images.pexels.com/photos/5985391/pexels-photo-5985391.jpeg?auto=compress&cs=tinysrgb&w=1200&h=820&fit=crop",
-        alt: "Canteiro de obras urbano",
-        caption: "Preparação e desenvolvimento de canteiro.",
+        src: "assets/images/pexels-construccion-total-2464540-32291649.jpg",
+        alt: "Canteiro de obras com estrutura em execucao",
+        caption: "Controle das etapas e evolução física da obra.",
       },
       {
-        src: "https://images.pexels.com/photos/18411324/pexels-photo-18411324.jpeg?auto=compress&cs=tinysrgb&w=1200&h=820&fit=crop",
-        alt: "Construção vertical em andamento",
-        caption: "Estrutura em execução.",
+        src: "assets/images/pexels-d-goug-211350543-37175980.jpg",
+        alt: "Casa em construção com andaimes",
+        caption: "Fase externa com estrutura, fachada e acompanhamento técnico.",
       },
       {
-        src: "https://images.pexels.com/photos/6285154/pexels-photo-6285154.jpeg?auto=compress&cs=tinysrgb&w=1200&h=820&fit=crop",
-        alt: "Profissionais analisando planta de obra",
-        caption: "Planejamento e conferência de projeto.",
+        src: "assets/images/pexels-francesco-ungaro-15798784.jpg",
+        alt: "Edificio em construcao com linhas urbanas",
+        caption: "Estruturas urbanas e obras de maior porte.",
+      },
+    ],
+  },
+  reformas: {
+    title: "Reformas e ampliações",
+    images: [
+      {
+        src: "assets/images/pexels-mikael-blomkvist-8961555.jpg",
+        alt: "Equipe trabalhando em reforma residencial",
+        caption: "Reforma residencial com equipe, materiais e etapas coordenadas.",
       },
       {
-        src: "https://images.pexels.com/photos/6285151/pexels-photo-6285151.jpeg?auto=compress&cs=tinysrgb&w=1200&h=820&fit=crop",
-        alt: "Profissional com capacete revisando plantas",
-        caption: "Acompanhamento técnico das etapas.",
+        src: "assets/images/pexels-mikael-blomkvist-8961557.jpg",
+        alt: "Profissional analisando projeto em obra",
+        caption: "Acompanhamento técnico e conferência de soluções.",
       },
       {
-        src: "https://images.pexels.com/photos/3932298/pexels-photo-3932298.jpeg?auto=compress&cs=tinysrgb&w=1200&h=820&fit=crop",
-        alt: "Capacete e plantas de obra sobre mesa",
-        caption: "Documentação, planejamento e gestão da obra.",
+        src: "assets/images/pexels-tahaasamett-12527642.jpg",
+        alt: "Detalhe de ambiente em obra",
+        caption: "Intervenções planejadas para adaptar e valorizar o espaço.",
+      },
+      {
+        src: "assets/images/pexels-francesco-ungaro-15798786.jpg",
+        alt: "Arquitetura urbana com detalhes de fachada",
+        caption: "Referências visuais para acabamentos e soluções de fachada.",
       },
     ],
   },
@@ -126,6 +129,7 @@ const galleryTriggers = document.querySelectorAll("[data-gallery]");
 let activeGallery = null;
 let activeIndex = 0;
 
+if (modal && modalTitle && modalImage && modalCaption && thumbs) {
 function renderGalleryImage(index) {
   if (!activeGallery) return;
 
@@ -193,3 +197,4 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "ArrowLeft") renderGalleryImage(activeIndex - 1);
   if (event.key === "ArrowRight") renderGalleryImage(activeIndex + 1);
 });
+}
