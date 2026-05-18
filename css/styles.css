@@ -1326,6 +1326,26 @@ figcaption span {
     min-height: 280px;
   }
 
+  .service-card-inner,
+  .service-card:hover .service-card-inner,
+  .service-card:focus-within .service-card-inner,
+  .service-card:focus .service-card-inner {
+    transform: none;
+  }
+
+  .service-face {
+    backface-visibility: visible;
+  }
+
+  .service-back {
+    display: none;
+  }
+
+  .service-card:hover .service-front img,
+  .service-card:focus .service-front img {
+    transform: none;
+  }
+
   .about-panel {
     min-height: 280px;
   }
