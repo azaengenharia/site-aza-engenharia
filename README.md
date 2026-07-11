@@ -1,6 +1,6 @@
-# Site AZA Engenharia e Construcao
+# Site AZA Engenharia e Construção
 
-Site estatico preparado para publicacao no GitHub Pages.
+Site estático preparado para publicação no GitHub Pages.
 
 ## Estrutura
 
@@ -12,7 +12,7 @@ Site estatico preparado para publicacao no GitHub Pages.
 
 ## Identidade Visual
 
-O guia principal esta em `brand/README.md`. A paleta foi organizada com vermelho como cor principal da marca e azul aco como detalhe complementar para dar um visual mais moderno e tecnico.
+O guia principal está em `brand/README.md`. A paleta foi organizada com vermelho como cor principal da marca e azul aço como detalhe complementar para dar um visual mais moderno e técnico.
 
 ## Publicacao no GitHub Pages
 

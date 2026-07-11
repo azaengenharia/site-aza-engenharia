@@ -13,6 +13,10 @@ window.addEventListener("load", () => {
 });
 
 const revealItems = document.querySelectorAll(".reveal");
+const whatsappButton = document.querySelector(".floating-whatsapp");
+const heroCarousel = document.querySelector("[data-hero-carousel]");
+let whatsappNotificationPlayed = false;
+let whatsappAudioContext = null;
 
 revealItems.forEach((item, index) => {
   const group = item.closest(".reveal-group");
@@ -42,14 +46,115 @@ const revealObserver = new IntersectionObserver(
 
 revealItems.forEach((item) => revealObserver.observe(item));
 
+if (heroCarousel) {
+  const heroVisual = heroCarousel.closest(".hero-visual");
+  const heroSlides = Array.from(heroCarousel.querySelectorAll("[data-hero-slide]"));
+  const previousButton = heroVisual?.querySelector("[data-hero-prev]");
+  const nextButton = heroVisual?.querySelector("[data-hero-next]");
+  let activeHeroSlide = heroSlides.findIndex((slide) => slide.classList.contains("is-active"));
+  let heroCarouselTimer = null;
+
+  if (activeHeroSlide < 0) activeHeroSlide = 0;
+
+  function showHeroSlide(nextIndex) {
+    if (heroSlides.length < 2) return;
+
+    const currentSlide = heroSlides[activeHeroSlide];
+    const nextSlide = heroSlides[(nextIndex + heroSlides.length) % heroSlides.length];
+    if (!currentSlide || !nextSlide || currentSlide === nextSlide) return;
+
+    currentSlide.classList.add("is-exiting");
+    currentSlide.classList.remove("is-active");
+    nextSlide.classList.add("is-active");
+    window.setTimeout(() => currentSlide.classList.remove("is-exiting"), 760);
+    activeHeroSlide = heroSlides.indexOf(nextSlide);
+  }
+
+  function restartHeroCarousel() {
+    window.clearInterval(heroCarouselTimer);
+    heroCarouselTimer = window.setInterval(() => showHeroSlide(activeHeroSlide + 1), 6200);
+  }
+
+  previousButton?.addEventListener("click", () => {
+    showHeroSlide(activeHeroSlide - 1);
+    restartHeroCarousel();
+  });
+
+  nextButton?.addEventListener("click", () => {
+    showHeroSlide(activeHeroSlide + 1);
+    restartHeroCarousel();
+  });
+
+  restartHeroCarousel();
+}
+
+function getWhatsappAudioContext() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return null;
+
+  if (!whatsappAudioContext || whatsappAudioContext.state === "closed") {
+    whatsappAudioContext = new AudioContext();
+  }
+
+  return whatsappAudioContext;
+}
+
+function playWhatsappNotification() {
+  if (whatsappNotificationPlayed) return;
+
+  const audioContext = getWhatsappAudioContext();
+  if (!audioContext || audioContext.state === "suspended") return;
+
+  whatsappNotificationPlayed = true;
+
+  const now = audioContext.currentTime;
+  const notes = [
+    { frequency: 880, start: 0, duration: .08 },
+    { frequency: 1175, start: .11, duration: .12 },
+  ];
+
+  notes.forEach((note) => {
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(note.frequency, now + note.start);
+    gain.gain.setValueAtTime(0, now + note.start);
+    gain.gain.linearRampToValueAtTime(.055, now + note.start + .01);
+    gain.gain.exponentialRampToValueAtTime(.001, now + note.start + note.duration);
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    oscillator.start(now + note.start);
+    oscillator.stop(now + note.start + note.duration + .02);
+  });
+
+  window.setTimeout(() => audioContext.close(), 620);
+}
+
+function unlockWhatsappNotification() {
+  const audioContext = getWhatsappAudioContext();
+  if (!audioContext) return;
+
+  audioContext.resume().then(() => {
+    window.setTimeout(playWhatsappNotification, 3000);
+  }).catch(() => {});
+}
+
+if (whatsappButton) {
+  window.setTimeout(playWhatsappNotification, 3000);
+  window.addEventListener("pointerdown", unlockWhatsappNotification, { once: true });
+  window.addEventListener("keydown", unlockWhatsappNotification, { once: true });
+}
+
 const galleries = {
   residencial: {
-    title: "Obras residenciais",
+    title: "Obras residênciais",
     images: [
       {
         src: "assets/images/pexels-alef-morais-336305364-34277690.jpg",
-        alt: "Residencia contemporanea com fachada em madeira, vidro e pedra",
-        caption: "Residencia contemporanea com materiais naturais e fachada marcante.",
+        alt: "Residência contemporânea com fachada em madeira, vidro e pedra",
+        caption: "Residência contemporânea com materiais naturais e fachada marcante.",
       },
       {
         src: "assets/images/pexels-alaritammsalu-27390096.jpg",
@@ -58,7 +163,7 @@ const galleries = {
       },
       {
         src: "assets/images/pexels-amar-35120035.jpg",
-        alt: "Detalhe arquitetonico residencial",
+        alt: "Detalhe arquitetônico residencial",
         caption: "Composição arquitetônica e cuidado com volumetria.",
       },
       {
@@ -78,7 +183,7 @@ const galleries = {
       },
       {
         src: "assets/images/pexels-construccion-total-2464540-32291649.jpg",
-        alt: "Canteiro de obras com estrutura em execucao",
+        alt: "Canteiro de obras com estrutura em execução",
         caption: "Controle das etapas e evolução física da obra.",
       },
       {
@@ -88,7 +193,7 @@ const galleries = {
       },
       {
         src: "assets/images/pexels-francesco-ungaro-15798784.jpg",
-        alt: "Edificio em construcao com linhas urbanas",
+        alt: "Edifício em construção com linhas urbanas",
         caption: "Estruturas urbanas e obras de maior porte.",
       },
     ],
