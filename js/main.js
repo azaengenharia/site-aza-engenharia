@@ -147,7 +147,7 @@ if (whatsappButton) {
   window.addEventListener("keydown", unlockWhatsappNotification, { once: true });
 }
 
-const galleries = {
+let galleries = {
   residencial: {
     title: "Obras residênciais",
     images: [
@@ -233,6 +233,115 @@ const thumbs = document.querySelector("#gallery-thumbs");
 const galleryTriggers = document.querySelectorAll("[data-gallery]");
 let activeGallery = null;
 let activeIndex = 0;
+let openGalleryByName = () => {};
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function workSubtitle(work) {
+  return [work.category, work.stage, work.city].filter(Boolean).join(" · ");
+}
+
+function renderFeaturedWork(work) {
+  const container = document.querySelector("#featured-work");
+  if (!container || !work) return;
+
+  container.innerHTML = `
+    <img src="${work.image}" alt="${escapeHtml(work.imageAlt)}">
+    <div class="project-feature-copy">
+      <p class="eyebrow">Destaque</p>
+      <h3>${escapeHtml(work.title)}</h3>
+      <p>${escapeHtml(work.description || workSubtitle(work) || "Obra acompanhada pela AZA Engenharia e Construção.")}</p>
+    </div>
+  `;
+}
+
+function renderWorksList(works) {
+  const container = document.querySelector("#works-list");
+  if (!container) return;
+
+  if (!works.length) {
+    container.innerHTML = '<div class="empty-state">Nenhuma obra publicada no momento.</div>';
+    return;
+  }
+
+  container.innerHTML = works.map((work) => `
+    <figure class="reveal work-item is-visible">
+      <button class="work-trigger" type="button" data-gallery="${work.id}" aria-label="Abrir galeria de ${escapeHtml(work.title)}">
+        <img src="${work.image}" alt="${escapeHtml(work.imageAlt)}">
+        <figcaption>
+          <strong>${escapeHtml(work.title)}</strong>
+          <span>${escapeHtml(work.description || workSubtitle(work) || "Galeria da obra.")}</span>
+        </figcaption>
+      </button>
+    </figure>
+  `).join("");
+
+  container.querySelectorAll("[data-gallery]").forEach((trigger) => {
+    trigger.addEventListener("click", () => openGalleryByName(trigger.dataset.gallery));
+  });
+}
+
+function renderWorksMosaic(works) {
+  const container = document.querySelector("#works-mosaic");
+  if (!container) return;
+
+  const images = works.flatMap((work) => (
+    work.images.length
+      ? work.images.map((image) => ({ ...image, work }))
+      : [{ src: work.image, alt: work.imageAlt, work }]
+  )).slice(0, 4);
+
+  if (!images.length) return;
+
+  container.innerHTML = images.map((image, index) => `
+    <img class="reveal is-visible${index === 0 ? " mosaic-tall" : ""}${index === 3 ? " mosaic-wide" : ""}" src="${image.src}" alt="${escapeHtml(image.alt || image.work.title)}">
+  `).join("");
+}
+
+function updateWorksGalleries(works) {
+  galleries = works.reduce((acc, work) => {
+    const images = work.images.length
+      ? work.images
+      : [{ src: work.image, alt: work.imageAlt, caption: work.description || work.title }];
+
+    acc[work.id] = {
+      title: work.title,
+      images: images.map((image) => ({
+        src: image.src,
+        alt: image.alt || work.title,
+        caption: image.caption || work.description || workSubtitle(work) || work.title,
+      })),
+    };
+
+    return acc;
+  }, {});
+}
+
+async function initWorksFromSupabase() {
+  const hasWorksPage = document.querySelector("#works-list");
+  if (!hasWorksPage || !window.AZA_DATA?.loadPublishedWorks) return;
+
+  try {
+    const works = await window.AZA_DATA.loadPublishedWorks();
+    const featured = works.find((work) => work.featured) || works[0];
+    updateWorksGalleries(works);
+    renderFeaturedWork(featured);
+    renderWorksList(works);
+    renderWorksMosaic(works);
+  } catch (error) {
+    const container = document.querySelector("#works-list");
+    if (container) {
+      container.innerHTML = `<div class="empty-state">Não foi possível carregar as obras agora. <small>${escapeHtml(error.message)}</small></div>`;
+    }
+  }
+}
 
 if (modal && modalTitle && modalImage && modalCaption && thumbs) {
 function renderGalleryImage(index) {
@@ -273,6 +382,8 @@ function openGallery(galleryName) {
   modal.querySelector(".gallery-close").focus();
 }
 
+openGalleryByName = openGallery;
+
 function closeGallery() {
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
@@ -303,3 +414,10 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "ArrowRight") renderGalleryImage(activeIndex + 1);
 });
 }
+
+initWorksFromSupabase();
+window.setInterval(initWorksFromSupabase, 45000);
+window.addEventListener("focus", initWorksFromSupabase);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) initWorksFromSupabase();
+});
