@@ -255,7 +255,7 @@ function renderFeaturedWork(work) {
   container.innerHTML = `
     <img src="${work.image}" alt="${escapeHtml(work.imageAlt)}">
     <div class="project-feature-copy">
-      <p class="eyebrow">Destaque</p>
+      <p class="eyebrow">Obra em foco</p>
       <h3>${escapeHtml(work.title)}</h3>
       <p>${escapeHtml(work.description || workSubtitle(work) || "Obra acompanhada pela AZA Engenharia e Construção.")}</p>
     </div>
@@ -330,7 +330,7 @@ async function initWorksFromSupabase() {
 
   try {
     const works = await window.AZA_DATA.loadPublishedWorks();
-    const featured = works.find((work) => work.featured) || works[0];
+    const featured = works[0];
     updateWorksGalleries(works);
     renderFeaturedWork(featured);
     renderWorksList(works);
