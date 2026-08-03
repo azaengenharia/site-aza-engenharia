@@ -330,7 +330,7 @@ async function initWorksFromSupabase() {
 
   try {
     const works = await window.AZA_DATA.loadPublishedWorks();
-    const featured = works[0];
+    const featured = works.find((work) => work.featured) || works[0];
     updateWorksGalleries(works);
     renderFeaturedWork(featured);
     renderWorksList(works);
