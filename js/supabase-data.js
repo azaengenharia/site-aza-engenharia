@@ -28,11 +28,17 @@ function mediaUrl(path) {
     .join("/")}`;
 }
 
+function mediaType(media) {
+  if (media?.media_type) return media.media_type;
+  return /\.(mp4|webm|mov|m4v)(?:$|\?)/i.test(media?.image_url || "") ? "video" : "image";
+}
+
 function normalizeWork(record, imagesByWork) {
   const images = (imagesByWork.get(record.id) || [])
     .slice()
     .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
-  const cover = images.find((image) => image.is_cover) || images[0];
+  const photos = images.filter((media) => mediaType(media) === "image");
+  const cover = photos.find((image) => image.is_cover) || photos[0];
 
   return {
     id: record.id,
@@ -48,6 +54,7 @@ function normalizeWork(record, imagesByWork) {
     image: mediaUrl(cover?.image_url) || "assets/images/pexels-alef-morais-336305364-34277690.jpg",
     imageAlt: cover?.alt_text || record.title || "",
     images: images.map((image) => ({
+      type: mediaType(image),
       src: mediaUrl(image.image_url),
       alt: image.alt_text || record.title || "",
       caption: image.alt_text || record.description || record.title || "",

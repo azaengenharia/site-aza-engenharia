@@ -230,6 +230,7 @@ const modalTitle = document.querySelector("#gallery-title");
 const modalImage = document.querySelector("#gallery-image");
 const modalCaption = document.querySelector("#gallery-caption");
 const thumbs = document.querySelector("#gallery-thumbs");
+const modalVideo = document.querySelector("#gallery-video");
 const galleryTriggers = document.querySelectorAll("[data-gallery]");
 let activeGallery = null;
 let activeIndex = 0;
@@ -296,7 +297,7 @@ function renderWorksMosaic(works) {
     work.images.length
       ? work.images.map((image) => ({ ...image, work }))
       : [{ src: work.image, alt: work.imageAlt, work }]
-  )).slice(0, 4);
+  )).filter((media) => media.type !== "video").slice(0, 4);
 
   if (!images.length) return;
 
@@ -314,6 +315,7 @@ function updateWorksGalleries(works) {
     acc[work.id] = {
       title: work.title,
       images: images.map((image) => ({
+        type: image.type || "image",
         src: image.src,
         alt: image.alt || work.title,
         caption: image.caption || work.description || workSubtitle(work) || work.title,
@@ -343,15 +345,30 @@ async function initWorksFromSupabase() {
   }
 }
 
-if (modal && modalTitle && modalImage && modalCaption && thumbs) {
+if (modal && modalTitle && modalImage && modalVideo && modalCaption && thumbs) {
 function renderGalleryImage(index) {
   if (!activeGallery) return;
 
   activeIndex = (index + activeGallery.images.length) % activeGallery.images.length;
-  const image = activeGallery.images[activeIndex];
-  modalImage.src = image.src;
-  modalImage.alt = image.alt;
-  modalCaption.textContent = image.caption;
+  const media = activeGallery.images[activeIndex];
+  modalVideo.pause();
+
+  if (media.type === "video") {
+    modalImage.classList.add("is-hidden");
+    modalImage.removeAttribute("src");
+    modalVideo.classList.remove("is-hidden");
+    modalVideo.src = media.src;
+    modalVideo.setAttribute("aria-label", media.alt || "Vídeo da obra");
+  } else {
+    modalVideo.classList.add("is-hidden");
+    modalVideo.removeAttribute("src");
+    modalVideo.load();
+    modalImage.classList.remove("is-hidden");
+    modalImage.src = media.src;
+    modalImage.alt = media.alt;
+  }
+
+  modalCaption.textContent = media.caption;
 
   thumbs.querySelectorAll(".gallery-thumb").forEach((button, buttonIndex) => {
     button.classList.toggle("is-active", buttonIndex === activeIndex);
@@ -369,8 +386,10 @@ function openGallery(galleryName) {
     const button = document.createElement("button");
     button.className = "gallery-thumb";
     button.type = "button";
-    button.setAttribute("aria-label", `Abrir imagem ${index + 1}`);
-    button.innerHTML = `<img src="${image.src}" alt="">`;
+    button.setAttribute("aria-label", `Abrir ${image.type === "video" ? "vídeo" : "imagem"} ${index + 1}`);
+    button.innerHTML = image.type === "video"
+      ? '<span class="gallery-video-thumb" aria-hidden="true">▶</span>'
+      : `<img src="${image.src}" alt="">`;
     button.addEventListener("click", () => renderGalleryImage(index));
     thumbs.appendChild(button);
   });
@@ -389,6 +408,9 @@ function closeGallery() {
   modal.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
   modalImage.src = "";
+  modalVideo.pause();
+  modalVideo.removeAttribute("src");
+  modalVideo.load();
 }
 
 galleryTriggers.forEach((trigger) => {

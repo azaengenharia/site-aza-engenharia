@@ -8,6 +8,7 @@ Site estático preparado para publicação no GitHub Pages.
 - `css/styles.css`: estilos do site.
 - `assets/logos`: logos em SVG e PNG de referencia.
 - `assets/images`: fotos usadas no site.
+- As galerias de obras carregam fotos e vídeos publicados pelo Admin AZA via Supabase.
 - `brand`: guia de identidade visual, tokens e referencias.
 
 ## Identidade Visual
